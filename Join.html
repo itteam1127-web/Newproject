@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>One Million Steps • Join</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root{
+      --font: "Manrope", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
+      --textStrong: rgba(255,255,255,.96);
+
+      --bg0:#05060a;
+      --bg1:#070a11;
+
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.045);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.08);
+
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.72);
+      --muted2: rgba(255,255,255,.58);
+
+      --gold: #f4d06f;
+      --green: #34d399;
+      --red: #ff3b3b;
+      --blue: #3aa0ff;
+
+      --shadow: 0 18px 40px rgba(0,0,0,.25);
+      --shadow2: 0 10px 26px rgba(0,0,0,.45);
+
+      --r16: 16px;
+      --r18: 18px;
+      --r22: 22px;
+
+      --container: 1120px;
+      --pad: 16px;
+
+      --marquee1: 28s;
+      --marquee2: 36s;
+
+      --stingerDur: 900ms;
+    }
+
+    *{ box-sizing:border-box }
+    html,body{height:100%}
+
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 650px at 70% 18%, rgba(125,211,252,.22), transparent 58%),
+        radial-gradient(900px 600px at 18% 35%, rgba(167,139,250,.20), transparent 58%),
+        radial-gradient(650px 520px at 40% 85%, rgba(251,191,36,.14), transparent 60%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      overflow-x:hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      background:
+        radial-gradient(circle at 22% 18%, rgba(255,255,255,.06), transparent 40%),
+        radial-gradient(circle at 78% 30%, rgba(255,255,255,.07), transparent 42%),
+        radial-gradient(circle at 32% 72%, rgba(255,255,255,.05), transparent 45%),
+        radial-gradient(circle at 70% 72%, rgba(255,255,255,.05), transparent 45%);
+      opacity:.8;
+      pointer-events:none;
+    }
+    body:after{
+      content:"";
+      position:fixed; inset:-40%;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.12;
+      pointer-events:none;
+      transform: translateZ(0);
+    }
+
+    /* Layout wrapper (same as reference page) */
+    .phone{
+      width:min(1100px, 100%);
+      margin:0 auto;
+      padding: 0 18px 120px;
+      background: transparent;
+      border: 0;
+      box-shadow:none;
+    }
+
+    .screen{ background: transparent; border:0; box-shadow:none; overflow:visible; }
+
+    /* Remove unused decorative layers */
+    .bg,.fog,.glow{ display:none !important; }
+
+    /* Sticky glass navbar */
+    .appbar{
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 14px 0;
+    }
+    .appbar:before{
+      content:"";
+      position:absolute;
+      inset: 0;
+      background: rgba(6, 9, 12, 0.40);
+      border: 1px solid var(--border);
+      border-radius: var(--r18);
+      box-shadow: var(--shadowSoft);
+    }
+    @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))){
+      .appbar:before{ backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    }
+
+    .appbar > *{ position:relative; }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+    .appIcon{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+      flex: 0 0 auto;
+    }
+
+    .appTitle{ display:flex; flex-direction:column; line-height:1.12; min-width:0; }
+    .t{ font-weight: 900; font-size: 14px; white-space:nowrap; }
+    .s{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.70);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 54vw;
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.78);
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      white-space:nowrap;
+    }
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22d3ee;
+      box-shadow: 0 0 0 4px rgba(34,211,238,0.14);
+    }
+
+    /* Cards */
+    .card{
+      background: linear-gradient(180deg, rgba(20,26,32,.58), rgba(12,16,20,.46));
+      border: 1px solid var(--border2);
+      border-radius: var(--r24);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      margin-top: 16px;
+    }
+    .cardPad{ padding: 18px; }
+
+    @supports ((-webkit-backdrop-filter: blur(16px)) or (backdrop-filter: blur(16px))){
+      .card{ backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    }
+
+    /* Hero header */
+    .k{
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .65px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.70);
+      margin-bottom: 8px;
+    }
+    .big{
+      font-weight: 900;
+      font-size: clamp(38px, 7vw, 60px);
+      letter-spacing: .5px;
+      line-height: 1.05;
+      margin: 6px 0 10px;
+      color: rgba(255,255,255,0.92); /* fallback */
+      word-break: break-word;
+    }
+    /* gradient text when supported */
+    @supports ((-webkit-background-clip:text) or (background-clip:text)){
+      .big{
+        background: linear-gradient(90deg,#60a5fa 0%, #a78bfa 40%, #fbbf24 85%, #67e8f9 100%);
+        -webkit-background-clip:text;
+        background-clip:text;
+        color: transparent;
+      }
+    }
+
+    .subLine{
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: rgba(255,255,255,.74);
+      line-height: 1.55;
+    }
+    .subLine b{ color: rgba(255,255,255,.92); }
+
+    /* Tree sizing */
+    .treeWrap{ width: 200px; height: 220px; display:flex; align-items:center; justify-content:center; }
+    .treeSvg{ width: 200px; height: auto; }
+
+    /* Tiles */
+    .tiles{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tile{
+      padding: 12px 12px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .tk{
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .55px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.62);
+    }
+    .tv{
+      margin-top: 6px;
+      font-weight: 900;
+      font-size: 16px;
+      color: rgba(255,255,255,.92);
+    }
+
+    /* Buttons */
+    button{ font-family:inherit; cursor:pointer; }
+    .btnRow{
+      display:flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .btn{
+      flex:1;
+      height: 48px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      font-weight: 900;
+      font-size: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.92);
+      transition: transform .15s ease, filter .15s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .btn:active{ transform: translateY(0); }
+    .btn.primary{
+      color:#06140a;
+      background: linear-gradient(180deg,var(--green1),var(--green2));
+      box-shadow: 0 10px 22px rgba(0,0,0,0.28);
+    }
+    .btn.ghost{ background: rgba(255,255,255,.06); }
+
+    :where(button, a):focus-visible{
+      outline: 3px solid rgba(255, 216, 107, .9);
+      outline-offset: 3px;
+    }
+
+    /* Scoreboard header */
+    .sectionHead{
+      padding: 16px 18px 0;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .sectionTitle{
+      margin:0;
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.90);
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .badge{
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .badge svg{ width:18px; height:18px; }
+
+    .counterRow{
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
+      font-weight: 800;
+      white-space:nowrap;
+    }
+    .counter b{ color: rgba(255,255,255,0.92); }
+
+    .board{ padding: 14px 18px 18px; }
+    .boardList{ display:flex; flex-direction:column; gap: 10px; }
+
+    .row{
+      padding: 12px 12px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .who{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+      flex:1;
+    }
+    .rank{
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      font-weight: 900;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      flex:0 0 auto;
+    }
+    .avatarImg{
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.14);
+      object-fit: cover;
+      flex:0 0 auto;
+      background: rgba(255,255,255,0.06);
+    }
+    .name{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      font-weight: 900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .flagImg{
+      width: 18px;
+      height: 12px;
+      border-radius: 3px;
+      border: 1px solid rgba(255,255,255,0.12);
+      flex:0 0 auto;
+    }
+    .meta{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.62);
+      font-weight: 700;
+    }
+    .right{
+      font-weight: 900;
+      white-space:nowrap;
+      display:flex;
+      align-items:baseline;
+      gap: 8px;
+    }
+    .small{
+      font-size: 12px;
+      color: rgba(255,255,255,0.62);
+      font-weight: 800;
+    }
+
+    /* Toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 18px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10, 14, 18, 0.82);
+      box-shadow: var(--shadowSoft);
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      max-width: min(520px, calc(100vw - 28px));
+      z-index: 999;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 860px){
+      .phone{ padding: 0 18px 120px; }
+    }
+    @media (max-width: 520px){
+
+      /* Mobile fix: hero steps + tree layout */
+      .hero .cardPad > div[style*="display:flex"]{
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center;
+      }
+      .hero .cardPad > div[style*="display:flex"] > div{
+        width: 100%;
+      }
+      .hero .treeWrap{
+        margin-top: 10px;
+        width: 160px;
+        height: 180px;
+      }
+      .hero .treeSvg{ width: 160px; }
+
+      /* Steps number sizing + spacing */
+      #stepsBig{
+        font-size: clamp(34px, 10vw, 48px);
+        margin: 10px 0 8px;
+        line-height: 1.05;
+      }
+      .subLine{
+        margin-top: 6px;
+      }
+
+      .phone{ padding: 0 14px 118px; }
+      .s{ display:none; }
+      .appbar:before{ border-radius: 18px; }
+      .tiles{ grid-template-columns: 1fr; }
+      .btnRow{ flex-direction: column; }
+      .row{ flex-direction: column; align-items:flex-start; }
+      .right{ 
+        width:auto; 
+        justify-content:flex-end; 
+        align-self:flex-end;
+      }
+      .right .small{
+        margin-left:6px;
+      }
+      .treeWrap{ width: 170px; height: 190px; }
+      .treeSvg{ width: 170px; }
+      body:after{ opacity: .10; }
+    }
+
+
+
+
+
+
+
+
+/* ===== Force PRIMARY buttons to Black+Gold theme (no logic/content change) ===== */
+.btn.primary, .btn.primary:visited{
+  color: #101010;
+  background: linear-gradient(180deg, rgba(255, 212, 97, 1), rgba(204, 137, 0, 1)) !important;
+  border: 1px solid rgba(255, 212, 97, 0.28) !important;
+  box-shadow: 0 10px 22px rgba(204, 137, 0, 0.22) !important;
+}
+.btn.primary:hover{
+  filter: brightness(1.05);
+}
+
+
+
+/* Gold accents */
+.pill{ border-color: rgba(255, 212, 97, 0.18) !important; }
+.dot{ background: rgba(255, 212, 97, 1) !important; box-shadow: 0 0 0 4px rgba(255, 212, 97, 0.14) !important; }
+
+
+/* === Manual steps + history modals (lightweight, no layout impact) === */
+.modal{position:fixed;inset:0;display:none;z-index:9999}
+.modal.show{display:block}
+.modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.modal__card{position:relative;max-width:520px;margin:8vh auto 0;background:rgba(15,18,24,.96);border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.55);overflow:hidden}
+.modal__card--wide{max-width:720px}
+.modal__head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.10)}
+.modal__title{font-weight:700}
+.modal__x{background:transparent;border:0;color:rgba(255,255,255,.85);font-size:18px;cursor:pointer}
+.modal__body{padding:16px}
+.modal__label{display:block;font-size:13px;color:rgba(255,255,255,.75);margin-bottom:8px}
+.modal__input{width:100%;padding:12px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:rgba(255,255,255,.95);outline:none}
+.modal__input:focus{border-color:rgba(34,197,94,.55);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.modal__hint{margin-top:10px;font-size:12px;color:rgba(255,255,255,.60)}
+.modal__foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 16px;border-top:1px solid rgba(255,255,255,.10)}
+.historyList{display:flex;flex-direction:column;gap:10px}
+
+.historyControls{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.historyLabel{color:rgba(255,255,255,.75);font-size:13px}
+.historySelect{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:8px 10px;font-size:13px;outline:none}
+.historySelect option{background:#0b0f14;color:#fff}
+.historySummary{color:rgba(255,255,255,.7);font-size:13px;margin-bottom:10px}
+.historyItem{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(0,0,0,.18)}
+.historyItem .d{color:rgba(255,255,255,.75);font-size:13px}
+.historyItem .s{font-weight:800}
+
+
+/* =========================
+   BLACK + GOLD THEME OVERRIDE (MATCH TRACKER)
+   ========================= */
+
+:root{
+  --gold: #d4af37;
+  --goldSoft: rgba(212,175,55,.45);
+  --goldGlow: rgba(212,175,55,.22);
+
+  --bg0:#050505;
+  --bg1:#0a0a0a;
+
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.70);
+
+  --stroke: rgba(212,175,55,.55);
+  --stroke2: rgba(212,175,55,.35);
+}
+
+/* Page background */
+html, body{
+  background:
+    radial-gradient(1200px 520px at 20% 12%, rgba(212,175,55,.12), transparent 60%),
+    radial-gradient(1200px 520px at 85% 10%, rgba(212,175,55,.08), transparent 60%),
+    linear-gradient(180deg, var(--bg1), var(--bg0)) !important;
+}
+
+/* Any glass layers should be darker */
+body:before{ opacity:.65 !important; }
+body:after{ opacity:.10 !important; }
+
+/* ✅ Global golden outline for every box */
+.card,
+.tile,
+.row,
+.field,
+.historyItem,
+.note,
+.badge,
+.rank,
+.avatarImg,
+.flagImg,
+.pill,
+.toast,
+.appbar:before,
+input,
+select,
+button,
+.btn,
+.modal__card,
+.modal-box{
+  border: 1px solid var(--stroke) !important;
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,.12),
+    0 18px 40px rgba(0,0,0,.60) !important;
+}
+
+/* Cards look premium */
+.card{
+  background: linear-gradient(180deg, rgba(25,25,25,.72), rgba(10,10,10,.58)) !important;
+}
+
+/* Tiles & rows */
+.tile, .row{
+  background: rgba(0,0,0,.35) !important;
+}
+
+/* Navbar + bottom nav */
+.appbar:before{
+  background: rgba(10,10,10,.72) !important;
+}
+
+/* Pills */
+.pill{
+  background: rgba(255,255,255,.04) !important;
+}
+
+/* Hero big gradient -> gold only */
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .big{
+    background: linear-gradient(90deg,#f7d774 0%, #d4af37 55%, #fff2b3 100%) !important;
+    -webkit-background-clip:text !important;
+    background-clip:text !important;
+    color: transparent !important;
+  }
+}
+
+/* Buttons */
+.btn.primary,
+.btn.accept{
+  background: linear-gradient(135deg, #f7d774, #d4af37) !important;
+  color: #111 !important;
+  border-color: rgba(212,175,55,.75) !important;
+  box-shadow: 0 10px 22px rgba(212,175,55,.18) !important;
+}
+.btn.primary:hover,
+.btn.accept:hover{
+  filter: brightness(1.05);
+  box-shadow: 0 14px 30px rgba(212,175,55,.25) !important;
+}
+
+/* Ghost/secondary buttons */
+.btn.ghost,
+.btn.cancel{
+  background: rgba(0,0,0,.28) !important;
+  color: rgba(255,255,255,.92) !important;
+  border-color: rgba(212,175,55,.45) !important;
+}
+
+/* Dot indicator gold */
+.dot{
+  background: var(--gold) !important;
+  box-shadow: 0 0 0 4px rgba(212,175,55,.18) !important;
+}
+
+/* Focus ring gold */
+:where(button, a, input, select):focus-visible{
+  outline: 3px solid rgba(212, 175, 55, .95) !important;
+  outline-offset: 3px !important;
+}
+
+/* Modal panels */
+.modal__card, .modal-box{
+  background: rgba(12,12,12,.92) !important;
+}
+
+</style>
+</head>
+<body>
+<div class="phone">
+<div class="screen">
+<div class="bg"></div>
+<div class="fog"></div>
+<div class="glow"></div>
+<div class="content">
+<div class="appbar">
+<div class="brand">
+<div aria-hidden="true" class="appIcon">
+<svg fill="none" viewbox="0 0 24 24">
+<path d="M5 14c2-6 6-8 10-9 3-.7 4.5 1.7 3.8 3.8-1 3.2-3.4 7.6-8.8 9.2-2 .6-4.2.2-5.8-.9" stroke="#EAF7F1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M7 16c1-1 5-4 10-6" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="appTitle">
+<div class="t">One Million Steps</div>
+<div class="s">Every walk grows green.</div>
+</div>
+</div>
+<div class="pill">
+<span class="dot" id="dot"></span>
+<span id="statusText">Live</span>
+</div>
+</div>
+
+<div class="card hero">
+<div class="cardPad">
+<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+<div>
+<div class="k">Walk Track Challenge</div>
+<div class="big" id="stepsBig">0</div>
+<div class="subLine">Challenge target: <b id="challengeTarget"></b></div>
+<div class="subLine"> <b id="sourceHint"></b></div>
+</div>
+<!-- Glowing tree: small at start of day, grows over time -->
+<div class="treeWrap sproutGlow" id="treeWrap">
+<svg aria-label="Daily growth tree" class="treeSvg" id="treeSvg" role="img" viewbox="0 0 220 260">
+<defs>
+<filter height="140%" id="softBlur" width="140%" x="-20%" y="-20%">
+<fegaussianblur stddeviation="2.5"></fegaussianblur>
+</filter>
+<mask id="revealMask">
+<rect fill="black" height="260" width="220" x="0" y="0"></rect>
+<rect fill="white" height="0" id="revealRect" width="220" x="0" y="260"></rect>
+</mask>
+<lineargradient id="leafGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#55c96a"></stop>
+<stop offset="100%" stop-color="#1f7a38"></stop>
+</lineargradient>
+<lineargradient id="trunkGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#9a6a3a"></stop>
+<stop offset="100%" stop-color="#6b3f1f"></stop>
+</lineargradient>
+</defs>
+<ellipse cx="110" cy="238" fill="#000" filter="url(#softBlur)" opacity="0.14" rx="70" ry="14"></ellipse>
+<path d="M35 240 C70 220, 150 220, 185 240" fill="none" opacity="0.25" stroke="#2f7f3a" stroke-linecap="round" stroke-width="8"></path>
+<g id="growGroup" mask="url(#revealMask)">
+<path d="M110 235
+                     C108 220, 108 205, 110 190
+                     C112 170, 108 150, 106 132
+                     C104 110, 108 92, 110 75
+                     C112 55, 115 45, 118 35" fill="none" id="trunk" stroke="url(#trunkGrad)" stroke-linecap="round" stroke-linejoin="round" stroke-width="18"></path>
+<path class="branch" d="M110 155 C95 150, 78 138, 66 120" fill="none" stroke="#7a4724" stroke-linecap="round" stroke-width="10"></path>
+<path class="branch" d="M112 145 C128 140, 148 126, 160 108" fill="none" stroke="#7a4724" stroke-linecap="round" stroke-width="10"></path>
+<path class="branch small" d="M108 118 C94 112, 84 104, 76 92" fill="none" stroke="#6e3f20" stroke-linecap="round" stroke-width="8"></path>
+<path class="branch small" d="M118 110 C134 104, 146 96, 154 84" fill="none" stroke="#6e3f20" stroke-linecap="round" stroke-width="8"></path>
+<g id="canopy" opacity="0.1">
+<path d="M60 120
+                           C50 95, 65 70, 92 66
+                           C98 48, 120 40, 136 52
+                           C160 46, 178 62, 176 88
+                           C196 96, 198 122, 182 134
+                           C176 154, 154 164, 134 156
+                           C118 170, 92 170, 78 154
+                           C60 156, 44 142, 48 126
+                           C52 122, 56 120, 60 120 Z" fill="url(#leafGrad)" opacity="0.95"></path>
+<circle cx="86" cy="92" fill="#7ee58b" opacity="0.35" r="22"></circle>
+<circle cx="140" cy="86" fill="#7ee58b" opacity="0.30" r="26"></circle>
+<circle cx="122" cy="122" fill="#2b9b47" opacity="0.22" r="28"></circle>
+</g>
+<g id="leafAnim" opacity="0">
+<path d="M155 95 C165 92, 170 105, 160 112 C150 108, 145 98, 155 95 Z" fill="#7ee58b"></path>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<div class="tiles">
+<div class="tile">
+<div class="tk">Your rank</div>
+<div class="tv" id="rankTile">—</div>
+</div>
+<div class="tile">
+<div class="tk">Competition</div>
+<div class="tv" id="compTile">Daily</div>
+</div>
+<div class="tile">
+<div class="tk">Ends</div>
+<div class="tv" id="endsTile">23:59</div>
+</div>
+</div>
+<div class="btnRow" style="padding:12px 0 0;">
+<!-- Your button -->
+<button class="btn primary" id="btnRefresh">Add count manually</button>
+<button class="btn ghost" id="btnHistory" style="margin-left:8px; font-size:14px; padding:8px 12px;">My history</button>
+
+<!-- Modal / Popup -->
+<div id="verifyModal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">Submission Conditions</h3>
+
+    <p>
+      You must send your <b>username</b> and a <b>step count screenshot</b> to our verification account.
+      You may also use a trusted third-party app such as <b>Google Fit</b>.
+      <br><br>
+      If we detect any cheating, you will be <b>disqualified</b>.
+      <br><br>
+      If you agree to these conditions, click <b>Accept & Continue</b>.
+      Then you can submit your proof on Telegram.
+    </p>
+
+    <div class="modal-actions">
+      <button class="btn cancel" id="btnCancel">Cancel</button>
+
+      <!-- Telegram link -->
+      <a class="btn accept" id="btnAccept" href="https://t.me/ssgroupsteps" target="_blank" rel="noopener">
+        Accept & Continue
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Modal overlay */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 9999;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  /* Modal box */
+  .modal-box {
+    width: 100%;
+    max-width: 520px;
+    background: #111;
+    color: #fff;
+    border-radius: 14px;
+    padding: 18px 18px 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .modal-box h3 {
+    margin: 0 0 10px;
+    font-size: 18px;
+  }
+
+  .modal-box p {
+    margin: 0 0 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* Buttons */
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+  }
+
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+  }
+
+  .btn.cancel {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+  }
+
+  .btn.accept {
+    background: #2ea44f;
+    color: #fff;
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    opacity: 0.95;
+  }
+
+/* === Manual steps + history modals (lightweight, no layout impact) === */
+.modal{position:fixed;inset:0;display:none;z-index:9999}
+.modal.show{display:block}
+.modal__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.modal__card{position:relative;max-width:520px;margin:8vh auto 0;background:rgba(15,18,24,.96);border:1px solid rgba(255,255,255,.12);border-radius:16px;box-shadow:0 18px 60px rgba(0,0,0,.55);overflow:hidden}
+.modal__card--wide{max-width:720px}
+.modal__head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.10)}
+.modal__title{font-weight:700}
+.modal__x{background:transparent;border:0;color:rgba(255,255,255,.85);font-size:18px;cursor:pointer}
+.modal__body{padding:16px}
+.modal__label{display:block;font-size:13px;color:rgba(255,255,255,.75);margin-bottom:8px}
+.modal__input{width:100%;padding:12px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);color:rgba(255,255,255,.95);outline:none}
+.modal__input:focus{border-color:rgba(34,197,94,.55);box-shadow:0 0 0 3px rgba(34,197,94,.12)}
+.modal__hint{margin-top:10px;font-size:12px;color:rgba(255,255,255,.60)}
+.modal__foot{display:flex;gap:10px;justify-content:flex-end;padding:14px 16px;border-top:1px solid rgba(255,255,255,.10)}
+.historyList{display:flex;flex-direction:column;gap:10px}
+.historyItem{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(0,0,0,.18)}
+.historyItem .d{color:rgba(255,255,255,.75);font-size:13px}
+.historyItem .s{font-weight:800}
+
+</style>
+
+<script>
+  const btnRefresh = document.getElementById("btnRefresh");
+  const verifyModal = document.getElementById("verifyModal");
+  const btnCancel = document.getElementById("btnCancel");
+
+  // Open modal on click
+  btnRefresh.addEventListener("click", () => {
+    verifyModal.classList.add("show");
+    verifyModal.setAttribute("aria-hidden", "false");
+  });
+
+  // Close modal
+  const closeModal = () => {
+    verifyModal.classList.remove("show");
+    verifyModal.setAttribute("aria-hidden", "true");
+  };
+
+  btnCancel.addEventListener("click", closeModal);
+
+  // Close modal if user clicks outside the box
+  verifyModal.addEventListener("click", (e) => {
+    if (e.target === verifyModal) closeModal();
+  });
+
+  // Close modal with ESC key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeModal();
+  });
+</script>
+
+</div>
+</div>
+</div>
+
+<div class="card" style="margin-top:12px;">
+<div class="sectionHead">
+<div class="sectionTitle">
+<span aria-hidden="true" class="badge">
+<svg fill="none" viewbox="0 0 24 24">
+<path d="M6 20V10" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+<path d="M12 20V4" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+<path d="M18 20v-7" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</span>
+          Live scoreboard
+        </div>
+<div class="counterRow">
+<span class="counter">Players: <b id="playerCount">0</b></span>
+<span class="counter">Updated: <b id="updatedAt">—</b></span>
+</div>
+</div>
+<div class="board">
+<div class="boardList" id="boardList"></div>
+<div class="tile" id="emptyNote" style="display:none; margin-top:10px;">
+<div class="tk">No players yet</div>
+<div class="tv">Tap “Join competition” to appear here.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="toast" class="toast" aria-live="polite"></div>
+<script>
+
+    /* ===== Theme Toggle ===== */
+    (function(){
+      const btn = document.getElementById("themeToggle");
+      const root = document.documentElement;
+      if(!btn){ return; }
+
+      const setTheme = (t) => {
+        root.setAttribute("data-theme", t);
+        localStorage.setItem("theme", t);
+        btn.textContent = t === "light" ? "☀️" : "🌙";
+      };
+
+      const saved = localStorage.getItem("theme");
+      setTheme(saved === "light" ? "light" : "dark");
+
+      btn.addEventListener("click", () => {
+        const cur = root.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+    })();
+
+    /* ===== Ripple effect for all .ripple ===== */
+    (function(){
+      const ripples = document.querySelectorAll('.ripple');
+      ripples.forEach(el => {
+        el.addEventListener('click', (e) => {
+          const rect = el.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          el.style.setProperty('--rx', x + 'px');
+          el.style.setProperty('--ry', y + 'px');
+
+          el.classList.remove('rippling');
+          void el.offsetWidth;
+          el.classList.add('rippling');
+
+          setTimeout(() => el.classList.remove('rippling'), 520);
+        });
+      });
+    })();
+
+    /* ===== Helpers ===== */
+    const formatNumber = (n) => new Intl.NumberFormat('en-US').format(Math.round(n));
+    function animateCount(el, to, duration = 1200) {
+      if (!el) return;
+      const from = 0;
+      const start = performance.now();
+      const tick = (now) => {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const val = from + (to - from) * eased;
+        el.textContent = formatNumber(val);
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+
+    /* ===== Data + Goal ===== */
+    (function(){
+      const totalSteps = 437982150;
+      const goal = 1000000000;
+
+      animateCount(document.getElementById("totalSteps"), totalSteps, 1400);
+      animateCount(document.getElementById("walkersToday"), 1000, 900);
+      animateCount(document.getElementById("stepsToday"), 12980410, 1200);
+      animateCount(document.getElementById("totalMembers"), 3248, 1000);
+
+      const percent = (totalSteps / goal) * 100;
+      document.getElementById("goalPercent").textContent = percent.toFixed(1) + "%";
+      document.getElementById("goalFill").style.width = Math.min(percent,100) + "%";
+      document.getElementById("goalText").textContent =
+        (totalSteps/1e6).toFixed(1) + "M / " + (goal/1e9).toFixed(0) + "B steps";
+    })();
+
+    /* ===== Activity rotation ===== */
+    (function(){
+      const activity = document.getElementById("activityText");
+      const events = [
+        "Riya added 1,000 steps • 2 mins ago",
+        "Arun reached a 5-day streak • 7 mins ago",
+        "Team Blue hit 50K steps today • 12 mins ago",
+        "Nisha joined the walk • 19 mins ago"
+      ];
+      let i = 0;
+      setInterval(() => {
+        i = (i + 1) % events.length;
+        activity.textContent = events[i];
+      }, 5200);
+    })();
+  
+</script>
+<script>
+
+  const $ = (id) => document.getElementById(id);
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx76A5jHnNtQXlMHNex7FZu_3IwT06Qp70uKP3PTL62z7JgEEO5RuZbYiOuZBy9rLXO3w/exec";
+
+  
+const SHEET_ENTRY_URL = "https://script.google.com/macros/s/AKfycbykdjwDDrJhQJ2KBtaXKxB_PhLq79swlPEqT1tPA39lPPBq0myz13lOvHLjEQYs_Vmk/exec";
+const ui = {
+    statusText: $("statusText"),
+    dot: $("dot"),
+    toast: $("toast"),
+
+    stepsBig: $("stepsBig"),
+    treeWrap: $("treeWrap"),
+    treeSvg: $("treeSvg"),
+    revealRect: $("revealRect"),
+    canopy: $("canopy"),
+    leafAnim: $("leafAnim"),
+    challengeTarget: $("challengeTarget"),
+
+    rankTile: $("rankTile"),
+    compTile: $("compTile"),
+    endsTile: $("endsTile"),
+
+    btnJoin: $("btnJoin"),
+    btnRefresh: $("btnRefresh"),
+
+    boardList: $("boardList"),
+    emptyNote: $("emptyNote"),
+    playerCount: $("playerCount"),
+    updatedAt: $("updatedAt"),
+
+    goTracker: $("goTracker"),
+    resetMe: $("resetMe"),
+    resetBoard: $("resetBoard"),
+  };
+
+  function showToast(msg){
+    ui.toast.textContent = msg;
+    ui.toast.classList.add("show");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => ui.toast.classList.remove("show"), 1600);
+  }
+  function setStatus(text, mode="live") {
+    ui.statusText.textContent = text;
+    const map = { live:"#22C55E", idle:"#64748b", error:"#FB7185" };
+    ui.dot.style.background = map[mode] || map.idle;
+  }
+
+  // ===== Storage keys =====
+  const TRACKER_STATE_KEY = "One Million Steps_state_v1";
+  const CHALLENGE_KEY     = "One Million Steps_challenge_v1";
+  const BOARD_KEY         = "One Million Steps_board_v1";
+  const ME_KEY            = "One Million Steps_me_v1";
+
+  function safeParse(json, fallback){ try { return JSON.parse(json); } catch { return fallback; } }
+  function lsGet(key, fallback){
+    const v = localStorage.getItem(key);
+    return v == null ? fallback : safeParse(v, fallback);
+  }
+  function lsSet(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+
+  function nowHHMM(){
+    const d = new Date();
+    return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  }
+
+  // ===== Challenge =====
+  function getChallenge(){
+    const ch = lsGet(CHALLENGE_KEY, null);
+    if (ch) return ch;
+
+    const d = new Date();
+    const stamp = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    const created = Date.now();
+    const fresh = { type:"Daily", date: stamp, target: 10000, createdAt: created };
+
+    lsSet(CHALLENGE_KEY, fresh);
+    return fresh;
+  }
+
+  function todayStamp(){ return new Date().toISOString().slice(0,10); }
+
+  function readTrackerSteps(){
+    const st = lsGet(TRACKER_STATE_KEY, null);
+    if (!st) return 0;
+    // keep only today's steps
+    if (st.date && st.date !== todayStamp()) return 0;
+    return Number(st.steps || 0);
+  }
+
+  // ===== Tree growth by TIME (midnight reset) =====
+  function clamp01(x){ return Math.max(0, Math.min(1, x)); }
+
+  function dayProgress01(){
+    const now = new Date();
+    const start = new Date(now); start.setHours(0,0,0,0);
+    const end   = new Date(now); end.setHours(24,0,0,0);
+    return clamp01((now - start) / (end - start));
+  }
+
+  function setTreeGrowth(g){
+    g = clamp01(Number(g || 0));
+    if (!ui.treeSvg || !ui.revealRect) return;
+
+    const H = 260; // viewBox height
+    const h = H * g;
+
+    // Reveal from bottom
+    ui.revealRect.setAttribute("y", String(H - h));
+    ui.revealRect.setAttribute("height", String(h));
+
+    // Draw trunk/branches progressively
+    const paths = ui.treeSvg.querySelectorAll("#trunk, .branch");
+    paths.forEach(p => {
+      const len = p.getTotalLength();
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = String(len * (1 - g));
+    });
+
+    // Canopy fades/scales in
+    if (ui.canopy){
+      const op = 0.10 + (0.90 * g);
+      const sc = 0.70 + (0.30 * g);
+      ui.canopy.setAttribute("opacity", op.toFixed(3));
+      ui.canopy.setAttribute("transform", `translate(${110*(1-sc)}, ${110*(1-sc)}) scale(${sc.toFixed(4)})`);
+    }
+
+    // Leaf appears near the end
+    if (ui.leafAnim){
+      const leafVis = clamp01((g - 0.65) / 0.35);
+      ui.leafAnim.setAttribute("opacity", leafVis.toFixed(3));
+    }
+
+    // Glow behavior:
+    // - Early day (small tree): strong glowing pulse
+    // - Later: stop pulse and keep subtle glow
+    if (ui.treeWrap){
+      const early = g < 0.20; // first ~20% of the day
+      ui.treeWrap.classList.toggle("sproutGlow", early);
+
+      // Reduce glow strength as it grows (still glows a little at the end)
+      const glowA = (0.10 + (0.22 * (1 - g))).toFixed(3);
+      const glowB = (0.06 + (0.18 * (1 - g))).toFixed(3);
+      ui.treeSvg.style.filter =
+        `drop-shadow(0 12px 30px rgba(163,230,53,${glowA})) ` +
+        `drop-shadow(0 0 14px rgba(34,197,94,${glowB}))`;
+    }
+  }
+
+  function updateChallengeUI(){
+    const ch = getChallenge();
+    ui.compTile.textContent = ch.type;
+    ui.challengeTarget.textContent = ch.target;
+    ui.endsTile.textContent = "23:59";
+
+    const steps = readTrackerSteps();
+    ui.stepsBig.textContent = steps;
+
+    // Grow by time (sprout → full tree by end of day)
+    setTreeGrowth(dayProgress01());
+  }
+
+  // ===== Flag + avatar helpers =====
+  function normalizeCC(cc){
+    cc = String(cc || "").trim().toLowerCase();
+    return /^[a-z]{2}$/.test(cc) ? cc : "lk";
+  }
+  function flagUrl(cc){
+    return "https://flagcdn.com/w20/" + normalizeCC(cc) + ".png";
+  }
+  function dicebearAvatar(name){
+    const seed = encodeURIComponent(String(name || "Player").trim() || "Player");
+    return "https://api.dicebear.com/7.x/avataaars/png?size=96&seed=" + seed;
+  }
+
+function sheetGetPlayers(){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const url = SHEET_API_URL + "?callback=" + cb + "&_=" + Date.now();
+
+    window[cb] = (data) => {
+      delete window[cb];
+      script.remove();
+      resolve(Array.isArray(data) ? data : []);
+    };
+
+    script.onerror = () => {
+      delete window[cb];
+      script.remove();
+      reject(new Error("JSONP load failed"));
+    };
+
+    script.src = url;
+    document.body.appendChild(script);
+  });
+}
+
+
+async function saveMeToSheet(me){
+  const steps = readTrackerSteps();
+
+await sheetUpsertPlayer({
+  id: me.id,
+  name: me.name,
+  cc: me.cc,
+  avatar_url: me.avatarUrl,
+  count: steps,
+  updated_at: Date.now()
+});
+await new Promise(r => setTimeout(r, 800));
+}
+
+
+  function normalizeName(s){
+    return (s || "").trim().replace(/\s+/g, " ").slice(0, 22);
+  }
+
+
+  // save a single entry (name + steps) to Google Sheet (with server timestamp)
+  async function saveEntryToSheet(name, steps, type="manual"){
+    try{
+      await fetch(SHEET_ENTRY_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, steps, type })
+      });
+    }catch(err){
+      // silent fail (offline etc.)
+      console.warn("Sheet save failed:", err);
+    }
+  }
+
+  function getMe(){ return lsGet(ME_KEY, null); }
+  function setMe(me){ lsSet(ME_KEY, me); }
+
+ async function upsertMeIntoBoard(){
+  const me = getMe();
+  if (!me) return;
+  await saveMeToSheet(me);
+}
+
+  function formatAgo(ts){
+    const s = Math.max(0, Math.floor((Date.now()-ts)/1000));
+    if (s < 60) return s + "s ago";
+    const m = Math.floor(s/60);
+    if (m < 60) return m + "m ago";
+    const h = Math.floor(m/60);
+    return h + "h ago";
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
+  }
+
+
+
+
+  // ===== Sheet Cache (fast load) =====
+  const BOARD_CACHE_KEY = "oms_board_cache_v1";
+  const BOARD_CACHE_TIME_KEY = "oms_board_cache_time_v1";
+  // Cache age is intentionally long so reloads are always instant.
+  // We still try to sync fresh data in the background.
+  const BOARD_CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+  function saveBoardCache(rows){
+    try{
+      localStorage.setItem(BOARD_CACHE_KEY, JSON.stringify(rows));
+      localStorage.setItem(BOARD_CACHE_TIME_KEY, String(Date.now()));
+    }catch(e){}
+  }
+
+  function loadBoardCache({ ignoreAge = false } = {}){
+    try{
+      const raw = localStorage.getItem(BOARD_CACHE_KEY);
+      const t = Number(localStorage.getItem(BOARD_CACHE_TIME_KEY) || 0);
+      if(!raw || !t) return null;
+      if(!ignoreAge && (Date.now() - t > BOARD_CACHE_MAX_AGE)) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+
+
+async function sheetUpsertPlayer(player){
+  // Bypass Apps Script CORS preflight by using no-cors.
+  // We can't read response in this mode, but the row will be written.
+  await fetch(SHEET_API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(player),
+  });
+}
+
+async function getBoard(){
+  const rows = await sheetGetPlayers();
+  saveBoardCache(rows);
+
+  return rows.map(r => ({
+    id: String(r.id || ""),
+    name: r.name || "Player",
+    cc: r.cc || "lk",
+    avatarUrl: r.avatar_url || "",
+    count: Number(r.count || 0),
+    updatedAt: Number(r.updated_at || Date.now())
+  }));
+}
+
+  async function renderBoard(boardData){
+    const board = (boardData || (await getBoard()))
+  .slice()
+  .sort((a,b)=> (b.count - a.count) || (b.updatedAt - a.updatedAt));
+
+    ui.playerCount.textContent = board.length;
+    ui.updatedAt.textContent = nowHHMM();
+
+    ui.boardList.innerHTML = "";
+    ui.emptyNote.style.display = board.length ? "none" : "block";
+
+    const me = getMe();
+    let myRank = "—";
+
+    board.forEach((p, i) => {
+      const rank = i + 1;
+      if (me && p.id === me.id) myRank = "#" + rank;
+
+      const safeName = escapeHtml(p.name || "Player");
+      const cc = normalizeCC(p.cc);
+      const av = p.avatarUrl || dicebearAvatar(p.name);
+
+      const div = document.createElement("div");
+      div.className = "row";
+      div.innerHTML = `
+        <div class="who">
+          <div class="rank">${rank}</div>
+
+          <img class="avatarImg"
+               src="${escapeHtml(av)}"
+               alt="${safeName}"
+               onerror="this.onerror=null; this.src='${escapeHtml(dicebearAvatar(p.name))}';">
+
+          <div style="min-width:0">
+            <div class="name">
+              <span>${safeName}</span>
+
+              <img class="flagImg"
+                   src="${escapeHtml(flagUrl(cc))}"
+                   alt="${escapeHtml(cc.toUpperCase())}"
+                   title="${escapeHtml(cc.toUpperCase())}"
+                   onerror="this.onerror=null; this.style.display='none';">
+
+              ${me && p.id===me.id ? "<span style='opacity:.7'>(you)</span>" : ""}
+            </div>
+            <div class="meta">updated ${formatAgo(p.updatedAt || Date.now())}</div>
+          </div>
+        </div>
+
+        <div class="right">
+          ${Number(p.count||0).toLocaleString()}
+          <span class="small">steps</span>
+        </div>
+      `;
+      ui.boardList.appendChild(div);
+    });
+
+    ui.rankTile.textContent = myRank;
+  }
+
+
+
+  // ===== Buttons =====
+if (ui.btnJoin) ui.btnJoin.addEventListener("click", async () => {
+  const name = normalizeName(prompt("Enter your name:", ""));
+  if (!name) return showToast("Name required");
+
+
+
+  let me = getMe();
+
+  if (!me) {
+    me = {
+      id: "me_" + crypto.randomUUID(),
+      name,
+    
+      count: 0,
+      updatedAt: Date.now()
+    };
+    setMe(me);
+  }
+
+  setTimeout(() => { saveMeToSheet(me).catch(console.error); }, 200);   // ✅ WRITE ONCE (non-blocking)
+  await renderBoard();       // refresh UI
+
+  showToast("Joined!");
+  window.location.href = "tracker.html";
+
+});
+
+
+ ui.btnRefresh.addEventListener("click", async () => {
+  const me = getMe();
+  if (!me) return;
+
+  await saveMeToSheet(me); // update same row
+  await renderBoard();
+
+  showToast("Updated");
+});
+
+
+  if(ui.goTracker) ui.goTracker.addEventListener("click", (e) => {
+    e.preventDefault();
+    window.location.href = "tracker.html";
+  });
+
+ if(ui.resetMe) ui.resetMe.addEventListener("click", async () => {
+  localStorage.removeItem(ME_KEY);
+  await renderBoard();   // just refresh UI
+  showToast("You removed");
+});
+
+
+if(ui.resetBoard) ui.resetBoard.addEventListener("click", async () => {
+  showToast("Board reset not supported (Sheet)");
+  await renderBoard();
+});
+
+
+  // ===== INIT =====
+ 
+(async () => {
+  updateChallengeUI();
+
+  // 1) Render cached board instantly (if available)
+  // Always show the last known leaderboard instantly (even if old).
+  const cachedRows = loadBoardCache({ ignoreAge: true });
+  if(cachedRows){
+    try{
+      const cachedBoard = cachedRows.map(r => ({
+        id: String(r.id || ""),
+        name: r.name || "Player",
+        cc: r.cc || "lk",
+        avatarUrl: r.avatar_url || "",
+        count: Number(r.count || 0),
+        updatedAt: Number(r.updated_at || Date.now())
+      }));
+      await renderBoard(cachedBoard);
+      setStatus("Loaded (cache)", "live");
+    }catch(e){}
+  }
+
+  // 2) Sync fresh board after UI is visible (non-blocking)
+  setTimeout(async () => {
+    try{
+      await renderBoard();
+      setStatus("Live", "live");
+    }catch(e){
+      // Keep cached view if live fetch fails
+      setStatus("Slow/Offline", "warn");
+      console.error(e);
+    }
+  }, 250);
+})();
+
+
+
+  // Smooth time-based growth updates
+// Update the challenge UI frequently (smooth countdown),
+// but avoid re-fetching the Sheet too often.
+setInterval(() => {
+  updateChallengeUI();
+}, 10000);
+
+// Fetch the latest leaderboard occasionally (lighter + faster reloads).
+setInterval(async () => {
+  try{
+    await renderBoard();
+    setStatus("Live", "live");
+  }catch(e){
+    setStatus("Slow/Offline", "warn");
+  }
+}, 5 * 1000);
+
+
+
+  // ===== Welcome Gate =====
+  const TOS_KEY = "TheForest_tosAccepted_v1";
+  const gateEl = document.getElementById("welcomeGate");
+  const gateAgree = document.getElementById("gateAgree");
+  const gateSubmit = document.getElementById("gateSubmit");
+
+  function showGate(){ gateEl.classList.add("show"); document.body.classList.add("gateLock"); }
+  function hideGate(){ gateEl.classList.remove("show"); document.body.classList.remove("gateLock"); }
+
+  if (localStorage.getItem(TOS_KEY) !== "yes") showGate();
+
+  gateAgree.addEventListener("change", () => { gateSubmit.disabled = !gateAgree.checked; });
+  gateSubmit.addEventListener("click", () => {
+    if (!gateAgree.checked) return;
+    localStorage.setItem(TOS_KEY, "yes");
+    hideGate();
+    showToast("Welcome to One Million Steps");
+  });
+
+</script>
+
+<!-- Manual Steps Modal -->
+<div class="modal" id="manualStepsModal" aria-hidden="true">
+  <div class="modal__backdrop" data-close="manualStepsModal"></div>
+  <div class="modal__card">
+    <div class="modal__head">
+      <div class="modal__title">Add steps manually</div>
+      <button class="modal__x" type="button" data-close="manualStepsModal">✕</button>
+    </div>
+    <div class="modal__body">
+      <label class="modal__label" for="manualNameInput">Name</label>
+      <input id="manualNameInput" class="modal__input" placeholder="Enter your name" />
+
+      <div style="height:10px"></div>
+
+      <label class="modal__label" for="manualStepsInput">Enter steps</label>
+      <input id="manualStepsInput" class="modal__input" inputmode="numeric" placeholder="e.g. 1000" />
+      <div class="modal__hint">This will be added to today's total. (Max 10,000 steps per day)</div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn ghost" type="button" data-close="manualStepsModal">Cancel</button>
+      <button class="btn" id="manualStepsSave" type="button">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- History Modal -->
+<div class="modal" id="historyModal" aria-hidden="true">
+  <div class="modal__backdrop" data-close="historyModal"></div>
+  <div class="modal__card modal__card--wide">
+    <div class="modal__head">
+      <div class="modal__title">My history</div>
+      <button class="modal__x" type="button" data-close="historyModal">✕</button>
+    </div>
+    <div class="modal__body">
+
+      <div class="historyControls">
+        <label class="historyLabel" for="historyFilter">Filter</label>
+        <select id="historyFilter" class="historySelect">
+          <option value="all">All</option>
+          <option value="today">Today</option>
+          <option value="week">Last 7 days</option>
+          <option value="month">Last 30 days</option>
+        </select>
+      </div>
+      <div id="historySummary" class="historySummary"></div>
+      <div id="historyList" class="historyList"></div>
+    </div>
+    <div class="modal__foot">
+      <button class="btn ghost" id="historyClear" type="button">Clear history</button>
+      <button class="btn" id="historyResetToday" type="button">Reset my step count</button>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<script>
+(function(){
+  // use the same storage key as the built-in tracker
+  const TRACKER_STATE_KEY = "One Million Steps_state_v1";
+  const HISTORY_KEY = "One Million Steps_history_v1";
+
+  function todayStamp(){ return new Date().toISOString().slice(0,10); }
+  function lsGet(k, d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+  function lsSet(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+  function getState(){ return lsGet(TRACKER_STATE_KEY, null); }
+  function setState(st){ lsSet(TRACKER_STATE_KEY, st); }
+
+  function getTodaySteps(){
+    const st = getState();
+    if (!st) return 0;
+    if (st.date && st.date !== todayStamp()) return 0;
+    return Number(st.steps||0);
+  }
+  function setTodaySteps(steps){
+    const safe = Math.max(0, Math.floor(Number(steps)||0));
+    const st = Object.assign({}, getState()||{});
+    st.date = todayStamp();
+    st.steps = safe;
+    setState(st);
+  }
+
+  function ensureDailyReset(){
+    const st = getState();
+    if (!st) return;
+    // if stored date is old, reset steps but keep object
+    if (st.date && st.date !== todayStamp()){
+      st.date = todayStamp();
+      st.steps = 0;
+      setState(st);
+    }
+  }
+
+  // UI helpers
+  function setBigSteps(n){
+    const el = document.getElementById("stepsBig");
+    if (el) el.textContent = String(n);
+  }
+
+  // Run once on load
+  ensureDailyReset();
+  setBigSteps(getTodaySteps());
+
+  // --- modal controls ---
+  function show(id){ const m=document.getElementById(id); if(m){ m.classList.add("show"); m.setAttribute("aria-hidden","false"); } }
+  function hide(id){ const m=document.getElementById(id); if(m){ m.classList.remove("show"); m.setAttribute("aria-hidden","true"); } }
+
+  document.addEventListener("click", (e)=>{
+    const t = e.target;
+    if (t && t.dataset && t.dataset.close){ hide(t.dataset.close); }
+  });
+
+  // override old behavior on btnRefresh
+  const btn = document.getElementById("btnRefresh");
+  if (btn){
+    btn.addEventListener("click", (e)=>{
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      show("manualStepsModal");
+      const inp = document.getElementById("manualStepsInput");
+      if (inp){ inp.value = ""; setTimeout(()=>inp.focus(), 50); }
+    }, true);
+  }
+
+  // save manual steps (ADD)
+  const saveBtn = document.getElementById("manualStepsSave");
+  if (saveBtn){
+    saveBtn.addEventListener("click", ()=>{
+      const nameInp = document.getElementById("manualNameInput");
+      const rawName = nameInp ? String(nameInp.value || "").trim() : "";
+      const who = rawName || "Anonymous";
+
+      const inp = document.getElementById("manualStepsInput");
+      let v = inp ? String(inp.value||"") : "";
+      v = v.replace(/[^0-9]/g,"");
+      let add = Math.max(0, Math.floor(Number(v)||0));
+      if (!add) return;
+
+      const current = getTodaySteps();
+      const MAX_PER_DAY = 10000;
+
+      if (current >= MAX_PER_DAY){
+        alert("You have already reached the maximum of 10,000 steps for today.");
+        return;
+      }
+
+      const remaining = MAX_PER_DAY - current;
+      if (add > remaining){
+        add = remaining;
+        alert(`Only ${remaining} steps can be added today (daily limit: 10,000).`);
+      }
+
+      const total = current + add;
+      setTodaySteps(total);
+      setBigSteps(total);
+      pushHistory(todayStamp(), add, total, who);
+      saveEntryToSheet(who, add, "manual");
+      hide("manualStepsModal");
+    });
+  }
+
+  function pushHistory(date, added, total, name){
+    const hist = lsGet(HISTORY_KEY, []);
+    hist.unshift({ date, added, total, name, at: Date.now() });
+    lsSet(HISTORY_KEY, hist.slice(0, 400));
+  }
+
+  // history modal
+  const hBtn = document.getElementById("btnHistory");
+  if (hBtn){
+    hBtn.addEventListener("click", (e)=>{
+      e.preventDefault(); e.stopImmediatePropagation();
+      renderHistory();
+      show("historyModal");
+    }, true);
+  }
+
+  function renderHistory(){
+    const list = document.getElementById("historyList");
+    const filterEl = document.getElementById("historyFilter");
+    const summaryEl = document.getElementById("historySummary");
+    if (!list) return;
+
+    const mode = filterEl ? filterEl.value : "all";
+    const histAll = lsGet(HISTORY_KEY, []);
+
+    // filter by time window
+    const today = todayStamp();
+    const todayMs = new Date(today + "T00:00:00").getTime();
+    const dayMs = 24*60*60*1000;
+
+    let hist = histAll.slice();
+    if (mode === "today"){
+      hist = hist.filter(h => (h.date||"") === today);
+    } else if (mode === "week"){
+      const min = todayMs - 6*dayMs; // today + previous 6 days
+      hist = hist.filter(h => {
+        const d = (h.date||"");
+        const ms = d ? new Date(d + "T00:00:00").getTime() : 0;
+        return ms >= min && ms <= todayMs;
+      });
+    } else if (mode === "month"){
+      const min = todayMs - 29*dayMs;
+      hist = hist.filter(h => {
+        const d = (h.date||"");
+        const ms = d ? new Date(d + "T00:00:00").getTime() : 0;
+        return ms >= min && ms <= todayMs;
+      });
+    }
+
+    if (!hist.length){
+      list.innerHTML = '<div style="color:rgba(255,255,255,.7)">No history in this range.</div>';
+      if (summaryEl) summaryEl.textContent = "";
+      return;
+    }
+
+    // Build summary (total added in range)
+    const totalAdded = hist.reduce((acc,h)=>acc + Number(h.added||0), 0);
+    const latestTotal = (mode==="today") ? getTodaySteps() : Number(hist[0].total||0);
+    if (summaryEl){
+      const label = mode==="all" ? "All time" : (mode==="today" ? "Today" : (mode==="week" ? "Last 7 days" : "Last 30 days"));
+      summaryEl.textContent = `${label}: +${totalAdded} steps`;
+    }
+
+    list.innerHTML = hist.map(h=>{
+      const d = h.date || "";
+      const s = Number(h.total||0);
+      const a = Number(h.added||0);
+            const n = (h.name || "").toString();
+      const nameTxt = n ? ` • ${escapeHtml(n)}` : "";
+      return `<div class="historyItem"><div class="d">${d}${nameTxt} • +${a}</div><div class="s">${s}</div></div>`;
+    }).join("");
+  }
+
+  const filterEl = document.getElementById("historyFilter");
+  if (filterEl){
+    filterEl.addEventListener("change", renderHistory);
+  }
+
+  const clearBtn = document.getElementById("historyClear");
+  if (clearBtn){
+    clearBtn.addEventListener("click", ()=>{
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    });
+  
+  const resetBtn = document.getElementById("historyResetToday");
+  if (resetBtn){
+    resetBtn.addEventListener("click", ()=>{
+      // Reset only today's step count (does not clear history)
+      setTodaySteps(0);
+      setBigSteps(0);
+      renderHistory();
+      alert("Today's step count has been reset to 0.");
+    });
+  }
+
+}
+
+  // IMPORTANT: keep big counter synced if other scripts overwrite it
+  setInterval(()=>{
+    ensureDailyReset();
+    setBigSteps(getTodaySteps());
+  }, 800);
+
+})();
+</script>
+
+</html>

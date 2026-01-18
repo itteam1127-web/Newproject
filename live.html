@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Live Scoreboard • One Million Steps</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================
+       TRACKER THEME (APPLIED)
+       ========================= */
+    :root{
+      color-scheme: dark;
+
+      --bg0:#060b1a;
+      --bg1:#0b1026;
+
+      --glass: rgba(10, 14, 18, 0.72);
+      --border: rgba(255,255,255,0.10);
+      --border2: rgba(255,255,255,0.14);
+
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --muted2: rgba(255,255,255,0.62);
+
+      --shadow: 0 12px 38px rgba(0,0,0,0.45);
+      --shadowSoft: 0 10px 28px rgba(0,0,0,0.35);
+
+      --r16:16px;
+      --r18:18px;
+      --r24:24px;
+
+      /* accents (same tracker theme) */
+      --cyan:#7dd3fc;
+      --violet:#a78bfa;
+      --gold:#fbbf24;
+
+      --danger:#FB7185;
+      --warn:#FBBF24;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
+    body{
+      margin:0;
+      font-family: "Plus Jakarta Sans", Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 650px at 70% 18%, rgba(125,211,252,.22), transparent 58%),
+        radial-gradient(900px 600px at 18% 35%, rgba(167,139,250,.20), transparent 58%),
+        radial-gradient(650px 520px at 40% 85%, rgba(251,191,36,.14), transparent 60%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      overflow-x:hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    body:before{
+      content:"";
+      position:fixed; inset:0;
+      background:
+        radial-gradient(circle at 22% 18%, rgba(255,255,255,.06), transparent 40%),
+        radial-gradient(circle at 78% 30%, rgba(255,255,255,.07), transparent 42%),
+        radial-gradient(circle at 32% 72%, rgba(255,255,255,.05), transparent 45%),
+        radial-gradient(circle at 70% 72%, rgba(255,255,255,.05), transparent 45%);
+      opacity:.8;
+      pointer-events:none;
+    }
+    body:after{
+      content:"";
+      position:fixed; inset:-40%;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay;
+      opacity:.12;
+      pointer-events:none;
+      transform: translateZ(0);
+    }
+
+    /* Desktop-first container like Tracker */
+    .wrap{
+      width:min(1100px, 100%);
+      margin:0 auto;
+      padding: 18px 18px 28px;
+    }
+
+    /* Sticky glass appbar like Tracker */
+    .appbar{
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 0;
+    }
+    .appbar:before{
+      content:"";
+      position:absolute;
+      inset: 0;
+      background: rgba(6, 9, 12, 0.40);
+      border: 1px solid var(--border);
+      border-radius: var(--r18);
+      box-shadow: var(--shadowSoft);
+    }
+    @supports ((-webkit-backdrop-filter: blur(18px)) or (backdrop-filter: blur(18px))){
+      .appbar:before{ backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    }
+    .appbar > *{ position:relative; }
+
+    .appbarInner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 0 14px;
+      min-height: 62px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width:0;
+    }
+
+    .appIcon{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+      flex: 0 0 auto;
+    }
+
+    .appTitle{ display:flex; flex-direction:column; line-height:1.12; min-width:0; }
+    .appTitle .t{ font-weight: 900; font-size: 14px; white-space:nowrap; }
+    .appTitle .s{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.70);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 54vw;
+      font-weight: 800;
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.78);
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      white-space:nowrap;
+      text-transform: uppercase;
+      letter-spacing: .45px;
+    }
+    .dot{
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #64748b;
+      box-shadow: 0 0 0 4px rgba(100,116,139,0.14);
+    }
+
+    .theme-btn{
+      width: 40px; height: 40px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.92);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      transition: transform .12s ease, filter .15s ease;
+      font-size: 16px;
+      font-weight: 900;
+    }
+    .theme-btn:hover{ filter: brightness(1.06); transform: translateY(-1px); }
+    .theme-btn:active{ transform: translateY(0); }
+
+    /* Card system like Tracker */
+    .card{
+      background: linear-gradient(180deg, rgba(20,26,32,.58), rgba(12,16,20,.46));
+      border: 1px solid var(--border2);
+      border-radius: var(--r24);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      margin-top: 16px;
+      position:relative;
+    }
+    @supports ((-webkit-backdrop-filter: blur(16px)) or (backdrop-filter: blur(16px))){
+      .card{ backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    }
+
+    .sectionHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      flex-wrap: wrap;
+    }
+
+    .sectionTitle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 900;
+      letter-spacing:.6px;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: rgba(255,255,255,.90);
+    }
+
+    .badge{
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+    .badge svg{ width:18px; height:18px; }
+
+    .counterRow{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+    .counter{
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing:.35px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.70);
+      white-space:nowrap;
+    }
+    .counter b{ color: rgba(255,255,255,.92); }
+
+    .board{
+      padding: 14px 18px 18px;
+    }
+
+    .boardList{
+      display:grid;
+      gap:10px;
+    }
+
+    .row{
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+      padding: 12px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .who{ display:flex; align-items:center; gap:10px; min-width:0; }
+
+    .rank{
+      width: 34px; height: 34px;
+      border-radius: 14px;
+      display:grid; place-items:center;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      flex: 0 0 auto;
+    }
+
+    .avatarImg{
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      object-fit: cover;
+      flex: 0 0 auto;
+      user-select:none;
+    }
+
+    .flagImg{
+      width: 20px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,.14);
+      object-fit: cover;
+      flex: 0 0 auto;
+      user-select:none;
+    }
+
+    .name{
+      font-weight: 900;
+      letter-spacing:.15px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 520px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .meta{
+      margin-top:2px;
+      font-size: 11px;
+      font-weight: 800;
+      color: rgba(255,255,255,.62);
+      letter-spacing:.25px;
+      text-transform: uppercase;
+    }
+
+    .right{
+      text-align:right;
+      font-weight: 900;
+      letter-spacing:.2px;
+      flex: 0 0 auto;
+    }
+    .right .small{
+      display:block;
+      margin-top:4px;
+      color: rgba(255,255,255,.62);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing:.25px;
+    }
+
+    .emptyNote{
+      margin-top:10px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.70);
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .emptyNote .tk{
+      font-size: 11px;
+      color: rgba(255,255,255,.62);
+      text-transform: uppercase;
+      letter-spacing:.75px;
+      font-weight: 900;
+    }
+    .emptyNote .tv{
+      margin-top:8px;
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing:.15px;
+      color: rgba(255,255,255,.92);
+    }
+
+    :where(button, a):focus-visible{
+      outline: 3px solid rgba(251, 191, 36, .9);
+      outline-offset: 3px;
+      border-radius: 14px;
+    }
+
+    /* Responsive (same approach as tracker) */
+    @media (max-width: 860px){
+      .wrap{ padding: 18px 18px 28px; }
+      .appTitle .s{ max-width: 50vw; }
+      .name{ max-width: 44vw; }
+    }
+    @media (max-width: 520px){
+      .wrap{ padding: 14px 14px 24px; }
+      .appTitle .s{ display:none; }
+      .name{ max-width: 52vw; }
+      .row{ align-items:flex-start; }
+    }
+  
+/* =========================
+   BLACK + GOLD THEME OVERRIDE
+   (MATCH TRACKER BLACK/GOLD)
+   ========================= */
+
+:root{
+  color-scheme: dark;
+
+  --gold: #d4af37;
+  --goldSoft: rgba(212,175,55,.45);
+  --goldGlow: rgba(212,175,55,.22);
+
+  --bg0:#050505;
+  --bg1:#0a0a0a;
+
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.70);
+
+  --stroke: rgba(212,175,55,.55);
+  --stroke2: rgba(212,175,55,.35);
+}
+
+/* Background */
+html, body{
+  background:
+    radial-gradient(1200px 520px at 20% 12%, rgba(212,175,55,.12), transparent 60%),
+    radial-gradient(1200px 520px at 85% 10%, rgba(212,175,55,.08), transparent 60%),
+    radial-gradient(650px 520px at 40% 85%, rgba(212,175,55,.10), transparent 60%),
+    linear-gradient(180deg, var(--bg1), var(--bg0)) !important;
+}
+
+/* Reduce old multi-color glow/noise so it looks clean */
+body:before{ opacity:.65 !important; }
+body:after{ opacity:.10 !important; }
+
+/* Golden focus ring */
+:where(button, a):focus-visible{
+  outline: 3px solid rgba(212, 175, 55, .92) !important;
+  outline-offset: 3px;
+  border-radius: 14px;
+}
+
+/* ✅ Global golden outline for every box */
+.appbar:before,
+.card,
+.row,
+.pill,
+.counter,
+.badge,
+.rank,
+.appIcon,
+.theme-btn,
+.avatarImg,
+.flagImg{
+  border-color: var(--stroke) !important;
+}
+
+.appbar:before,
+.card,
+.row,
+.pill,
+.counter,
+.badge,
+.rank,
+.appIcon,
+.theme-btn{
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,.12),
+    0 18px 40px rgba(0,0,0,.60) !important;
+}
+
+/* Glass backgrounds */
+.appbar:before{
+  background: rgba(10,10,10,.72) !important;
+}
+
+.card{
+  background: linear-gradient(180deg, rgba(25,25,25,.72), rgba(10,10,10,.58)) !important;
+}
+
+.row{
+  background: rgba(0,0,0,.30) !important;
+  box-shadow: inset 0 0 0 1px rgba(212,175,55,.10) !important;
+}
+
+.pill, .counter, .badge, .rank, .appIcon, .theme-btn{
+  background: rgba(0,0,0,.28) !important;
+}
+
+/* Dot status becomes gold */
+.dot{
+  background: var(--gold) !important;
+  box-shadow: 0 0 0 4px rgba(212,175,55,.18) !important;
+}
+
+/* Titles / subtitles */
+.appTitle .s,
+.meta,
+.right .small,
+.counter{
+  color: rgba(255,255,255,.72) !important;
+}
+
+/* Subtle gold separators */
+.sectionHead{
+  border-bottom-color: rgba(212,175,55,.22) !important;
+}
+
+/* Badge icon stroke to gold tint */
+.badge svg path{
+  stroke: rgba(255, 230, 150, .95) !important;
+}
+
+</style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- Appbar -->
+    <div class="appbar">
+      <div class="appbarInner">
+
+        <div class="brand">
+          <div class="appIcon" aria-hidden="true">
+            🏆
+          </div>
+          <div class="appTitle">
+            <div class="t">Live Scoreboard</div>
+            <div class="s">One Million Steps • Live updates</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; align-items:center;">
+          <div class="pill">
+            <span id="dot" class="dot"></span>
+            <span id="statusText">Live</span>
+          </div>
+          <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Scoreboard Card -->
+    <div class="card">
+      <div class="sectionHead">
+        <div class="sectionTitle">
+          <span class="badge" aria-hidden="true">
+            <svg fill="none" viewBox="0 0 24 24">
+              <path d="M6 20V10" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+              <path d="M12 20V4" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+              <path d="M18 20v-7" stroke="#EAF7F1" stroke-linecap="round" stroke-width="2"></path>
+            </svg>
+          </span>
+          Live scoreboard
+        </div>
+
+        <div class="counterRow">
+          <span class="counter">Players: <b id="playerCount">0</b></span>
+          <span class="counter">Updated: <b id="updatedAt">—</b></span>
+        </div>
+      </div>
+
+      <div class="board">
+        <div class="boardList" id="boardList"></div>
+
+        <div class="emptyNote" id="emptyNote" style="display:none;">
+          <div class="tk">No players yet</div>
+          <div class="tv">Waiting for first join…</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+  /* ===== Theme Toggle (same behavior as index) ===== */
+  (function(){
+    const btn = document.getElementById("themeToggle");
+    const root = document.documentElement;
+
+    const setTheme = (t) => {
+      root.setAttribute("data-theme", t);
+      localStorage.setItem("theme", t);
+      btn.textContent = t === "light" ? "☀️" : "🌙";
+    };
+
+    const saved = localStorage.getItem("theme");
+    setTheme(saved === "light" ? "light" : "dark");
+
+    btn.addEventListener("click", () => {
+      const cur = root.getAttribute("data-theme") || "dark";
+      setTheme(cur === "dark" ? "light" : "dark");
+    });
+  })();
+
+  /* ===== Live scoreboard logic ===== */
+  const $ = (id) => document.getElementById(id);
+
+  // ✅ Use SAME API URL as your working leaderboard page
+  const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbx76A5jHnNtQXlMHNex7FZu_3IwT06Qp70uKP3PTL62z7JgEEO5RuZbYiOuZBy9rLXO3w/exec";
+
+  const ui = {
+    boardList: $("boardList"),
+    emptyNote: $("emptyNote"),
+    playerCount: $("playerCount"),
+    updatedAt: $("updatedAt"),
+  };
+
+  function nowHHMM(){
+    const d = new Date();
+    return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  }
+
+  function normalizeCC(cc){
+    cc = String(cc || "").trim().toLowerCase();
+    return /^[a-z]{2}$/.test(cc) ? cc : "lk";
+  }
+
+  function flagUrl(cc){
+    return "https://flagcdn.com/w20/" + normalizeCC(cc) + ".png";
+  }
+
+  function dicebearAvatar(name){
+    const seed = encodeURIComponent(String(name || "Player").trim() || "Player");
+    return "https://api.dicebear.com/7.x/avataaars/png?size=96&seed=" + seed;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    }[c]));
+  }
+
+  function formatAgo(ts){
+    const s = Math.max(0, Math.floor((Date.now()-ts)/1000));
+    if (s < 60) return s + "s ago";
+    const m = Math.floor(s/60);
+    if (m < 60) return m + "m ago";
+    const h = Math.floor(m/60);
+    return h + "h ago";
+  }
+
+  // JSONP fetch
+  function sheetGetPlayers(){
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Math.random().toString(36).slice(2);
+      const script = document.createElement("script");
+      const url = SHEET_API_URL + "?callback=" + cb + "&_=" + Date.now();
+
+      window[cb] = (data) => {
+        delete window[cb];
+        script.remove();
+        resolve(Array.isArray(data) ? data : []);
+      };
+
+      script.onerror = () => {
+        delete window[cb];
+        script.remove();
+        reject(new Error("JSONP load failed"));
+      };
+
+      script.src = url;
+      document.body.appendChild(script);
+    });
+  }
+
+  // Cache
+  const BOARD_CACHE_KEY = "oms_board_cache_v1";
+  const BOARD_CACHE_TIME_KEY = "oms_board_cache_time_v1";
+
+  function saveBoardCache(rows){
+    try{
+      localStorage.setItem(BOARD_CACHE_KEY, JSON.stringify(rows));
+      localStorage.setItem(BOARD_CACHE_TIME_KEY, String(Date.now()));
+    }catch(e){}
+  }
+
+  function loadBoardCache(){
+    try{
+      const raw = localStorage.getItem(BOARD_CACHE_KEY);
+      if(!raw) return null;
+      return JSON.parse(raw);
+    }catch(e){ return null; }
+  }
+
+  async function getBoard(){
+    const rows = await sheetGetPlayers();
+    saveBoardCache(rows);
+
+    return rows.map(r => ({
+      id: String(r.id || ""),
+      name: r.name || "Player",
+      cc: r.cc || "lk",
+      avatarUrl: r.avatar_url || "",
+      count: Number(r.count || 0),
+      updatedAt: Number(r.updated_at || Date.now())
+    }));
+  }
+
+  async function renderBoard(boardData){
+    const board = (boardData || (await getBoard()))
+      .slice()
+      .sort((a,b)=> (b.count - a.count) || (b.updatedAt - a.updatedAt));
+
+    ui.playerCount.textContent = board.length;
+    ui.updatedAt.textContent = nowHHMM();
+
+    ui.boardList.innerHTML = "";
+    ui.emptyNote.style.display = board.length ? "none" : "block";
+
+    board.forEach((p, i) => {
+      const rank = i + 1;
+
+      const safeName = escapeHtml(p.name || "Player");
+      const cc = normalizeCC(p.cc);
+      const av = p.avatarUrl || dicebearAvatar(p.name);
+
+      const div = document.createElement("div");
+      div.className = "row";
+      div.innerHTML = `
+        <div class="who">
+          <div class="rank">${rank}</div>
+
+          <img class="avatarImg"
+               src="${escapeHtml(av)}"
+               alt="${safeName}"
+               onerror="this.onerror=null; this.src='${escapeHtml(dicebearAvatar(p.name))}';">
+
+          <div style="min-width:0">
+            <div class="name">
+              <span>${safeName}</span>
+
+              <img class="flagImg"
+                   src="${escapeHtml(flagUrl(cc))}"
+                   alt="${escapeHtml(cc.toUpperCase())}"
+                   title="${escapeHtml(cc.toUpperCase())}"
+                   onerror="this.onerror=null; this.style.display='none';">
+            </div>
+
+            <div class="meta">updated ${formatAgo(p.updatedAt || Date.now())}</div>
+          </div>
+        </div>
+
+        <div class="right">
+          ${Number(p.count||0).toLocaleString()}
+          <span class="small">steps</span>
+        </div>
+      `;
+      ui.boardList.appendChild(div);
+    });
+  }
+
+  // INIT: cached first, then live
+  (async () => {
+    const cachedRows = loadBoardCache();
+    if(cachedRows){
+      try{
+        const cachedBoard = cachedRows.map(r => ({
+          id: String(r.id || ""),
+          name: r.name || "Player",
+          cc: r.cc || "lk",
+          avatarUrl: r.avatar_url || "",
+          count: Number(r.count || 0),
+          updatedAt: Number(r.updated_at || Date.now())
+        }));
+        await renderBoard(cachedBoard);
+      }catch(e){}
+    }
+
+    setTimeout(async () => {
+      try{ await renderBoard(); } catch(e){ console.error(e); }
+    }, 250);
+  })();
+
+  // refresh every 5 seconds
+  setInterval(async () => {
+    try{ await renderBoard(); } catch(e){ console.error(e); }
+  }, 5 * 1000);
+</script>
+</body>
+</html>
